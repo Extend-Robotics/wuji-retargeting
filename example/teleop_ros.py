@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""ROS node bridging MediaPipe hand landmarks to wuji hand position controllers.
+"""ROS node bridging MediaPipe hand landmarks to wuji hand trajectory controllers.
 
 Subscribes to scale-normalized MediaPipe landmark topics published by
 er_mediapipe_hand_tracking, runs wuji retargeting to convert (21,3) hand
-landmarks into 20 joint angles, and publishes each joint angle to the
-corresponding position controller.
+landmarks into 20 joint angles, and publishes a JointTrajectory command
+to the wuji trajectory controller.
 
 Usage:
     # Right hand only (default)
@@ -26,7 +26,8 @@ from pathlib import Path
 
 import numpy as np
 import rospy
-from std_msgs.msg import Float64, Float64MultiArray
+from std_msgs.msg import Float64MultiArray
+from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
@@ -38,29 +39,23 @@ NUM_FINGERS = 5
 JOINTS_PER_FINGER = 4
 NUM_JOINTS = NUM_FINGERS * JOINTS_PER_FINGER
 
-# Retargeter qpos indices map 1:1 to position controllers because both use
-# the same ordering: Pinocchio reads joints from the URDF in document order
-# (finger{1-5}_joint{1-4}), and the ROS controllers follow that same naming.
-CONTROLLER_TOPIC_TEMPLATE = (
-    "/{side}_wuji/{side}_finger{finger}_joint{joint}_position_controller/command"
-)
 
+def build_joint_names(side):
+    """Build the ordered list of 20 joint names for the trajectory controller.
 
-def build_controller_publishers(side):
-    """Create a Float64 publisher for each of the 20 position controllers."""
-    publishers = []
+    Retargeter qpos indices map 1:1 to these names because both use the same
+    ordering: Pinocchio reads joints from the URDF in document order
+    (finger{1-5}_joint{1-4}), and the ROS controllers follow that same naming.
+    """
+    joint_names = []
     for finger in range(1, NUM_FINGERS + 1):
         for joint in range(1, JOINTS_PER_FINGER + 1):
-            topic = CONTROLLER_TOPIC_TEMPLATE.format(
-                side=side, finger=finger, joint=joint
-            )
-            pub = rospy.Publisher(topic, Float64, queue_size=1)
-            publishers.append(pub)
-    return publishers
+            joint_names.append(f"{side}_finger{finger}_joint{joint}")
+    return joint_names
 
 
-def make_landmark_callback(retargeter, publishers):
-    """Return a callback that retargets landmarks and publishes joint angles."""
+def make_landmark_callback(retargeter, trajectory_publisher, joint_names):
+    """Return a callback that retargets landmarks and publishes a JointTrajectory."""
     def callback(msg):
         if len(msg.data) != 63:
             rospy.logwarn_throttle(
@@ -72,8 +67,15 @@ def make_landmark_callback(retargeter, publishers):
         landmarks = np.array(msg.data, dtype=np.float64).reshape(21, 3)
         qpos = retargeter.retarget(landmarks)
 
-        for i, pub in enumerate(publishers):
-            pub.publish(Float64(data=float(qpos[i])))
+        trajectory = JointTrajectory()
+        trajectory.joint_names = joint_names
+
+        point = JointTrajectoryPoint()
+        point.positions = qpos.tolist()
+        point.time_from_start = rospy.Duration(0.05)
+        trajectory.points = [point]
+
+        trajectory_publisher.publish(trajectory)
 
     return callback
 
@@ -105,16 +107,19 @@ def main():
 
     for side in sides:
         retargeter = Retargeter.from_yaml(config_path, hand_side=side)
-        publishers = build_controller_publishers(side)
+        joint_names = build_joint_names(side)
+
+        traj_topic = f"/{side}_wuji/{side}_wuji_traj_controller/command"
+        traj_publisher = rospy.Publisher(traj_topic, JointTrajectory, queue_size=1)
 
         landmark_topic = f"{args.landmark_ns}/{side}_hand_landmarks"
         rospy.Subscriber(
             landmark_topic,
             Float64MultiArray,
-            make_landmark_callback(retargeter, publishers),
+            make_landmark_callback(retargeter, traj_publisher, joint_names),
             queue_size=1
         )
-        rospy.loginfo(f"Subscribed to {landmark_topic} -> /{side}_wuji/ controllers")
+        rospy.loginfo(f"Subscribed to {landmark_topic} -> {traj_topic}")
 
     rospy.loginfo("Wuji retargeting bridge running")
     rospy.spin()
