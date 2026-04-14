@@ -3,4 +3,4 @@
 	url = https://github.com/wuji-technology/mujoco-sim
 [submodule "wuji_retargeting/wuji_hand_description"]
 	path = wuji_retargeting/wuji_hand_description
-	url = https://github.com/wuji-technology/wuji_hand_description
+	url = https://github.com/Extend-Robotics/wuji-hand-description
