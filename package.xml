@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<package format="2">
+  <name>wuji_retargeting</name>
+  <version>0.2.0</version>
+  <description>
+    High-precision hand pose retargeting for the Wuji Hand: MediaPipe landmarks (21, 3) to 20 joint angles.
+    Catkinized fork of wuji-technology/wuji-retargeting for use in ROS1 Noetic workspaces.
+  </description>
+  <maintainer email="support@extendrobotics.com">Extend Robotics Support</maintainer>
+  <license>MIT</license>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <exec_depend>python3-numpy</exec_depend>
+  <exec_depend>python3-scipy</exec_depend>
+  <exec_depend>python3-yaml</exec_depend>
+  <exec_depend>python3-nlopt</exec_depend>
+  <!-- rosdep key 'pinocchio' resolves to apt package ros-noetic-pinocchio. Its python bindings
+       install under /opt/ros/noetic/lib/python3/dist-packages, which is on the path in a sourced
+       Noetic environment. Environments using a pip-installed pinocchio ('pin') instead must
+       provide it on PYTHONPATH themselves. -->
+  <exec_depend>pinocchio</exec_depend>
+</package>

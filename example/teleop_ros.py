@@ -100,8 +100,7 @@ def main():
 
     rospy.init_node("wuji_retargeting_bridge")
 
-    example_dir = Path(__file__).resolve().parent
-    config_path = args.config or str(example_dir / "config" / "adaptive_analytical_avp.yaml")
+    config_path = args.config or str(PROJECT_ROOT / "config" / "adaptive_analytical_avp.yaml")
 
     sides = ["left", "right"] if args.hand == "both" else [args.hand]
 

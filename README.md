@@ -16,10 +16,10 @@ https://github.com/user-attachments/assets/72116289-7a33-4a6b-83ca-fb4d9aaece0d
 │   │   └── ...
 │   └── wuji_hand_description/
 │       └── ...
+├── config/
+│   └── ...
 ├── example/
 │   ├── input_devices/
-│   │   └── ...
-│   ├── config/
 │   │   └── ...
 │   ├── data/
 │   │   └── ...
@@ -38,7 +38,7 @@ https://github.com/user-attachments/assets/72116289-7a33-4a6b-83ca-fb4d9aaece0d
 | `wuji_retargeting/wuji_hand_description/` | URDF and mesh submodule for Wuji Hand |
 | `example/` | Demonstration scripts for simulation and hardware control |
 | `example/input_devices/` | Input device modules (Vision Pro, MediaPipe replay) |
-| `example/config/` | YAML configuration files |
+| `config/` | YAML configuration files |
 | `example/data/` | Sample recording data |
 
 ## Quick Start

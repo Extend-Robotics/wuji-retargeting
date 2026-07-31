@@ -57,7 +57,7 @@ except ImportError:
 
 def run_teleop(
     hand_side: str = "right",
-    config_path: str = "config/adaptive_analytical_avp.yaml",
+    config_path: str = "../config/adaptive_analytical_avp.yaml",
     input_device_type: str = "mediapipe_replay",
     mediapipe_replay_path: str = "",
     visionpro_ip: str = "192.168.50.127",
@@ -258,8 +258,8 @@ Examples:
     )
 
     # Config
-    parser.add_argument('--config', type=str, default='config/adaptive_analytical_avp.yaml',
-                        help='Path to YAML configuration file (default: config/adaptive_analytical_avp.yaml)')
+    parser.add_argument('--config', type=str, default='../config/adaptive_analytical_avp.yaml',
+                        help='Path to YAML configuration file (default: ../config/adaptive_analytical_avp.yaml)')
     parser.add_argument('--hand', type=str, default='left', choices=['left', 'right'],
                         help='Hand side (default: left)')
 
@@ -316,8 +316,8 @@ Examples:
         mediapipe_replay_path = "data/avp1.pkl"
 
     # Auto-switch config for non-AVP input devices
-    if input_device_type in ("realsense", "video") and args.config == 'config/adaptive_analytical_avp.yaml':
-        args.config = 'config/adaptive_analytical_video.yaml'
+    if input_device_type in ("realsense", "video") and args.config == '../config/adaptive_analytical_avp.yaml':
+        args.config = '../config/adaptive_analytical_video.yaml'
 
     # Validate paths
     if input_device_type == "mediapipe_replay" and not mediapipe_replay_path:
