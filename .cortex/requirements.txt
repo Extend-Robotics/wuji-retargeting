@@ -1,12 +1,5 @@
-# Extend workspace images install this file (all repos' .cortex/requirements.txt
-# in one pip resolver run), because this package is consumed as a catkin package
-# from .repos pin sets, so the pyproject floors (numpy>=1.21, scipy>=1.11,
-# python>=3.10) are never enforced — and focal/py3.8 cannot meet them anyway.
-# These are the newest py3.8-compatible ranges covering the APIs the code uses:
-# numpy.typing needs numpy>=1.20 (focal apt ships 1.17.4), capped <1.24 because
-# focal's apt scipy still references np.typeDict, removed in numpy 1.24;
-# Rotation.as_matrix needs scipy>=1.4 (focal apt ships 1.3.3), capped <1.11
-# because scipy 1.11 drops py3.8. On py3.10+ (jammy) the pyproject floors apply
-# and apt already satisfies them, so these lines are no-ops there.
+# Consumed as a catkin package, so the pyproject floors (py3.10+) never apply;
+# these are the py3.8/focal substitutes. numpy.typing needs numpy>=1.20,
+# np.typeDict is gone in 1.24; Rotation.as_matrix needs scipy>=1.4, 1.11 drops py3.8.
 numpy>=1.20,<1.24; python_version < "3.10"
 scipy>=1.4,<1.11; python_version < "3.10"
