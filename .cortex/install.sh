@@ -1,9 +1,9 @@
 #!/bin/sh
-# Python setup for the cortex image build.
+# Python dependencies for the cortex image build.
 #
 # cortex_docker runs every src/*/.cortex/install.sh it finds in the ros1
-# workspace, from that repo's own root. TARGETARCH is amd64 or arm64. A
-# non-zero exit fails the image build.
+# workspace, from that repo's own root; arch-dependent steps probe
+# dpkg --print-architecture themselves. A non-zero exit fails the image build.
 set -e
 
 # Focal only: apt scipy 1.3.3 predates Rotation.as_matrix (scipy 1.4) and
