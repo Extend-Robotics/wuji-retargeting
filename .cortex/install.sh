@@ -6,11 +6,8 @@
 # dpkg --print-architecture themselves. A non-zero exit fails the image build.
 set -e
 
-# Focal only: apt scipy 1.3.3 predates Rotation.as_matrix (scipy 1.4) and
-# scipy>=1.11 drops py3.8. The jammy images satisfy the pyproject floors.
-python3 -c 'import sys; sys.exit(0 if sys.version_info < (3, 9) else 1)' || exit 0
-
 # --ignore-installed: overlay the apt scipy instead of uninstalling it.
 # --no-deps: the image pins numpy (jetson-quirks#1); a bare install would
 # drift it to 1.24, so leave deps alone - scipy 1.10 accepts the pin.
-pip3 install --ignore-installed --no-deps 'scipy>=1.4,<1.11'
+# The py3.8 marker inside the file makes this a no-op on jammy.
+pip3 install --ignore-installed --no-deps -r requirements_py38.txt
