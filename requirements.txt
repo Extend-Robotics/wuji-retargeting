@@ -1,11 +1,11 @@
 # Installed into the cortex images by cortex_docker (one resolver run over
 # every workspace repo's root requirements.txt, image pins via PIP_CONSTRAINT).
+# pinocchio and nlopt come from apt through package.xml (rosdep keys pinocchio,
+# python3-nlopt): pip's pin needs python>=3.9 and nlopt has no aarch64 wheel.
 numpy>=1.21.0
 wujihandpy
 avp_stream
 mujoco
-pin==3.8.0
-nlopt
 pyyaml
 # focal floors: apt scipy 1.3.3 lacks Rotation.as_matrix; scipy>=1.11 drops py3.8
 scipy>=1.4,<1.11; python_version < "3.9"
